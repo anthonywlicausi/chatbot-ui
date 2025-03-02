@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; text-align: center; }
+        #chatbox { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: auto; background: #f9f9f9; }
+        .message { padding: 8px; margin: 5px; border-radius: 5px; }
+        .user { background: #007bff; color: white; text-align: right; }
+        .bot { background: #ddd; text-align: left; }
+        input { width: 80%; padding: 10px; margin-top: 10px; }
+        button { padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h2>ChatGPT Chatbot</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function sendMessage() {
+            let inputField = document.getElementById("userInput");
+            let message = inputField.value.trim();
+            if (!message) return;
+
+            let chatbox = document.getElementById("chatbox");
+
+            // Add user message to chat
+            let userMsg = document.createElement("div");
+            userMsg.classList.add("message", "user");
+            userMsg.innerText = message;
+            chatbox.appendChild(userMsg);
+
+            inputField.value = ""; // Clear input
+
+            // Call API
+            let response = await fetch("https://fastapi-coding-api.onrender.com/chat/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: message, role: "default" })
+            });
+
+            let data = await response.json();
+
+            // Add bot response to chat
+            let botMsg = document.createElement("div");
+            botMsg.classList.add("message", "bot");
+            botMsg.innerText = data.response || "Error: Could not fetch response.";
+            chatbox.appendChild(botMsg);
+
+            chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to latest message
+        }
+    </script>
+
+</body>
+</html>
